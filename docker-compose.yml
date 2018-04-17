@@ -1,0 +1,39 @@
+#Sử dụng version 2.0 của docker-composer.
+version: '2.0'
+#Khai báo service.
+services:
+  #Image web để tạo ra 1 container web.
+  web:
+    # Các thư viện sẽ được tạo trong thư mục docker-web (Docker sẽ tự tìm đến file Dockerfile)
+    build:
+      context: docker-web
+    # Port dùng để tham chiếu cổng 80 của máy localhost đến cổng 90 của máy ảo ( container)
+    ports:
+      - "80:90"
+    # Chạy với quyền Admin.
+    cap_add:
+      - SYS_ADMIN
+    # Đặc quyền.
+    privileged: false
+    # Container sẽ connect đến container db.
+    links:
+      - db
+    # Source code sẽ được tham chiếu từ máy của mình đến thư mục của container.
+    volumes:
+      - /Users/nguyentruongan/Documents/Demo-Docker/demo_web/:/var/www/html/web
+    # Để thao tác cmd.
+    tty: true
+  #Image db để tạo ra container mysql.
+  db:
+    # Docker sẽ tự động pull 1 image trên docker hub để tạo ra container mysql.
+    image: mysql
+    # Luôn luôn khởi đổng.
+    restart: always
+    # Cài đặt user và password, database cho mysql.
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_USER: root
+      MYSQL_DATABASE: demo_mysql
+    # Port dùng để tham chiếu cổng 3307 của máy  vào 3306 của docker.
+    ports:
+      - "3307:3306"
